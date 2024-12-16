@@ -1,0 +1,183 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.HashMap;
+import java.util.Map;
+
+public class MobileTrackingSystemGUI extends Frame {
+    // Simulated user and device databases
+    private static Map<String, String> userDatabase = new HashMap<>();
+    private static Map<String, Boolean> deviceLockStatus = new HashMap<>();
+    private static Map<String, String> deviceLocation = new HashMap<>();
+    private static Map<String, String> deviceBackup = new HashMap<>();
+
+    private TextField usernameField, passwordField, deviceIdField;
+    private Label messageLabel, deviceStatusLabel;
+    private Button loginButton, registerButton, trackButton, lockButton, wipeButton, backupButton, recoverButton, exitButton;
+
+    public MobileTrackingSystemGUI() {
+        setTitle("Mobile Tracking System");
+        setSize(500, 500);
+        setLayout(new FlowLayout());
+
+        // Initialize UI components
+        add(new Label("Username:"));
+        usernameField = new TextField(20);
+        add(usernameField);
+
+        add(new Label("Password:"));
+        passwordField = new TextField(20);
+        passwordField.setEchoChar('*');
+        add(passwordField);
+
+        loginButton = new Button("Login");
+        add(loginButton);
+
+        registerButton = new Button("Register");
+        add(registerButton);
+
+        messageLabel = new Label("");
+        messageLabel.setForeground(Color.BLUE);
+        add(messageLabel);
+
+        // Device options
+        add(new Label("Device ID:"));
+        deviceIdField = new TextField(20);
+        add(deviceIdField);
+
+        trackButton = new Button("Track Device");
+        add(trackButton);
+
+        lockButton = new Button("Lock Device");
+        add(lockButton);
+
+        wipeButton = new Button("Wipe Device");
+        add(wipeButton);
+
+        backupButton = new Button("Backup Device");
+        add(backupButton);
+
+        recoverButton = new Button("Recover Device");
+        add(recoverButton);
+
+        deviceStatusLabel = new Label("");
+        deviceStatusLabel.setForeground(Color.RED);
+        add(deviceStatusLabel);
+
+        exitButton = new Button("Exit");
+        add(exitButton);
+
+        // Add button listeners
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+            if (login(username, password)) {
+                messageLabel.setText("Login Successful!");
+                System.out.println("User " + username + " logged in successfully.");
+            } else {
+                messageLabel.setText("Invalid credentials!");
+                System.out.println("Failed login attempt for user: " + username);
+            }
+        });
+
+        registerButton.addActionListener(e -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+            registerUser(username, password);
+            messageLabel.setText("User Registered Successfully!");
+            System.out.println("User " + username + " registered successfully.");
+        });
+
+        trackButton.addActionListener(e -> {
+            String deviceId = deviceIdField.getText();
+            String location = trackLocation(deviceId);
+            deviceStatusLabel.setText("Location: " + location);
+            System.out.println("Device " + deviceId + " tracked to location: " + location);
+        });
+
+        lockButton.addActionListener(e -> {
+            String deviceId = deviceIdField.getText();
+            lockDevice(deviceId);
+            deviceStatusLabel.setText("Device " + deviceId + " is now locked.");
+            System.out.println("Device " + deviceId + " locked successfully.");
+        });
+
+        wipeButton.addActionListener(e -> {
+            String deviceId = deviceIdField.getText();
+            wipeDevice(deviceId);
+            deviceStatusLabel.setText("Device " + deviceId + " data wiped.");
+            System.out.println("Data on device " + deviceId + " wiped successfully.");
+        });
+
+        backupButton.addActionListener(e -> {
+            String deviceId = deviceIdField.getText();
+            backupDeviceData(deviceId);
+            deviceStatusLabel.setText("Backup completed for " + deviceId);
+            System.out.println("Backup created for device " + deviceId);
+        });
+
+        recoverButton.addActionListener(e -> {
+            String deviceId = deviceIdField.getText();
+            String backupData = recoverDeviceData(deviceId);
+            if (backupData != null) {
+                deviceStatusLabel.setText("Recovered Data: " + backupData);
+                System.out.println("Data recovered for device " + deviceId + ": " + backupData);
+            } else {
+                deviceStatusLabel.setText("No backup found for " + deviceId);
+                System.out.println("No backup found for device " + deviceId);
+            }
+        });
+
+        exitButton.addActionListener(e -> {
+            System.out.println("Application closed.");
+            System.exit(0);
+        });
+
+        // Make the frame visible
+        setVisible(true);
+    }
+
+    // Simulating user registration
+    public static void registerUser(String username, String password) {
+        userDatabase.put(username, password);
+    }
+
+    // Simulating user login
+    public static boolean login(String username, String password) {
+        return userDatabase.containsKey(username) && userDatabase.get(username).equals(password);
+    }
+
+    // Simulate tracking device location
+    public static String trackLocation(String deviceId) {
+        if (!deviceLocation.containsKey(deviceId)) {
+            String newLocation = "Lat: 40.7128, Long: -74.0060"; // Example location
+            deviceLocation.put(deviceId, newLocation);
+        }
+        return deviceLocation.get(deviceId);
+    }
+
+    // Simulate locking a device
+    public static void lockDevice(String deviceId) {
+        deviceLockStatus.put(deviceId, true);
+    }
+
+    // Simulate wiping device data
+    public static void wipeDevice(String deviceId) {
+        if (deviceBackup.containsKey(deviceId)) {
+            deviceBackup.remove(deviceId);
+        }
+    }
+
+    // Simulate backing up device data
+    public static void backupDeviceData(String deviceId) {
+        deviceBackup.put(deviceId, "Backup data for " + deviceId);
+    }
+
+    // Simulate recovering device data
+    public static String recoverDeviceData(String deviceId) {
+        return deviceBackup.get(deviceId);
+    }
+
+    public static void main(String[] args) {
+        new MobileTrackingSystemGUI();
+    }
+}
